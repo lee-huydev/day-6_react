@@ -1,25 +1,44 @@
-import logo from './logo.svg';
 import './App.css';
-
+import Product from './Homework/product';
+import Sorts from './Homework/sort';
+import Loader from './components/loader';
+import { useState, useEffect } from 'react'
 function App() {
+   const api = 'https://fakestoreapi.com/products'
+   const [data, setData] = useState([])
+   const [dataRender, setDataRender] = useState([])
+    useEffect(()=> {
+        fetch(api)
+                .then(res => res.json())
+                .then(products => setData(products) || setDataRender(products))
+    }, [])
+    const handleOnClick = (e) => {
+       switch(e.target.innerText) {
+          case 'All':
+            setDataRender(data)
+            break;
+          case 'Price':
+            setDataRender(data.filter(e => e.price > 60))
+            break;
+          case 'Rate':
+            setDataRender(data.filter(e => e.rating.rate < 4))
+            break;
+          case 'Jewelery':
+            setDataRender(data.filter(e => e.category === "jewelery"))
+            break;
+       }
+    }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+     <div id='app-container'>
+         <Sorts onClick ={handleOnClick}/>
+         {
+            dataRender.length > 0 
+               ? <Product data={dataRender}/> 
+               : <Loader />
+         }
+     </div>
+     
+  )
 }
 
 export default App;
